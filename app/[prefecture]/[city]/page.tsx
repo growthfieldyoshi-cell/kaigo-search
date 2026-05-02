@@ -5,7 +5,7 @@ import { getCareMetrics } from "@/lib/care-metrics-presenter";
 import type { CareMetricsPresentation } from "@/lib/care-metrics-presenter";
 import { slugFromPrefecture } from "@/lib/prefecture-slugs";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export async function generateMetadata({ params }: { params: Promise<{ prefecture: string; city: string }> }): Promise<Metadata> {
   const { prefecture, city } = await params;

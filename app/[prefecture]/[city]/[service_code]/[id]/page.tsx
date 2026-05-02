@@ -4,7 +4,7 @@ import { getFacilityById } from "@/lib/queries";
 import { notFound } from "next/navigation";
 import { slugFromPrefecture } from "@/lib/prefecture-slugs";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export async function generateMetadata({ params }: { params: Promise<{ prefecture: string; city: string; id: string }> }): Promise<Metadata> {
   const { city, id } = await params;

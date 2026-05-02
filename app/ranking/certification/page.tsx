@@ -4,7 +4,7 @@ import { getCertificationRanking } from "@/lib/queries";
 import { getAllPrefectureSlugs } from "@/lib/prefecture-slugs";
 import { RankingTable, RankingDisclaimer, RankingFooterLinks } from "../components";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "介護認定率ランキング【全国版】| 高齢者の要介護認定が多い地域は？",

@@ -4,7 +4,7 @@ import { getSufficiencyRanking } from "@/lib/queries";
 import { getAllPrefectureSlugs, slugFromPrefecture } from "@/lib/prefecture-slugs";
 import { RankingTable, RankingDisclaimer, RankingFooterLinks } from "../components";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "入所系施設カバー率ランキング【全国版】| どの地域の施設供給が手厚いか",

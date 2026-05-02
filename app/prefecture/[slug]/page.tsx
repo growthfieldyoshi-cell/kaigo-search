@@ -5,7 +5,7 @@ import { getCitiesByPref, getPrefectureCareRankings } from "@/lib/queries";
 import type { CityRanking } from "@/lib/queries";
 import { prefectureFromSlug, getAllPrefectureSlugs } from "@/lib/prefecture-slugs";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 const BASE = "https://www.kaigosagashi.jp";
 

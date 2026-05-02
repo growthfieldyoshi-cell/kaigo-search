@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getFacilities, getServiceName } from "@/lib/queries";
 import { slugFromPrefecture } from "@/lib/prefecture-slugs";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 const PER_PAGE = 20;
 

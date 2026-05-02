@@ -1,7 +1,7 @@
 import { permanentRedirect } from "next/navigation";
 import { slugFromPrefecture } from "@/lib/prefecture-slugs";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export default async function PrefecturePage({ params }: { params: Promise<{ prefecture: string }> }) {
   const { prefecture } = await params;
