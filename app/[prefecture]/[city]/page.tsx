@@ -14,16 +14,22 @@ import type { CareServiceGroupKey } from "@/lib/care-service-groups";
 
 export const revalidate = 86400;
 
+const BASE = "https://www.kaigosagashi.jp";
+
 export async function generateMetadata({ params }: { params: Promise<{ prefecture: string; city: string }> }): Promise<Metadata> {
   const { prefecture, city } = await params;
+  const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
-  const services = await getServicesByCity(decodeURIComponent(prefecture), c);
+  const services = await getServicesByCity(pref, c);
   const title = `${c}の介護施設・${services.length}種類`;
   const description = `${c}で利用できる介護サービスを種類別に探せます。`;
   return {
     title,
     description,
     openGraph: { title, description },
+    alternates: {
+      canonical: `${BASE}/${encodeURIComponent(pref)}/${encodeURIComponent(c)}`,
+    },
   };
 }
 

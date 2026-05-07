@@ -6,10 +6,12 @@ import { slugFromPrefecture } from "@/lib/prefecture-slugs";
 
 export const revalidate = 86400;
 
+const BASE = "https://www.kaigosagashi.jp";
 const PER_PAGE = 20;
 
 export async function generateMetadata({ params }: { params: Promise<{ prefecture: string; city: string; service_code: string }> }): Promise<Metadata> {
   const { prefecture, city, service_code } = await params;
+  const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
   const serviceName = await getServiceName(service_code);
   const title = `${c}の${serviceName}一覧`;
@@ -18,6 +20,9 @@ export async function generateMetadata({ params }: { params: Promise<{ prefectur
     title,
     description,
     openGraph: { title, description },
+    alternates: {
+      canonical: `${BASE}/${encodeURIComponent(pref)}/${encodeURIComponent(c)}/${service_code}`,
+    },
   };
 }
 

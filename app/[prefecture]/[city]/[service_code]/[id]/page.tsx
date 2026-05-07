@@ -14,8 +14,11 @@ import {
 
 export const revalidate = 86400;
 
-export async function generateMetadata({ params }: { params: Promise<{ prefecture: string; city: string; id: string }> }): Promise<Metadata> {
-  const { city, id } = await params;
+const BASE = "https://www.kaigosagashi.jp";
+
+export async function generateMetadata({ params }: { params: Promise<{ prefecture: string; city: string; service_code: string; id: string }> }): Promise<Metadata> {
+  const { prefecture, city, service_code, id } = await params;
+  const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
   const numericId = Number(id);
   if (!Number.isInteger(numericId) || numericId <= 0) {
@@ -29,6 +32,9 @@ export async function generateMetadata({ params }: { params: Promise<{ prefectur
     title,
     description,
     openGraph: { title, description },
+    alternates: {
+      canonical: `${BASE}/${encodeURIComponent(pref)}/${encodeURIComponent(c)}/${service_code}/${id}`,
+    },
   };
 }
 
