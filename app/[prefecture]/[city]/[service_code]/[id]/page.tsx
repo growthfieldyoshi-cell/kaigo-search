@@ -3,6 +3,10 @@ import Link from "next/link";
 import { getFacilityById } from "@/lib/queries";
 import { notFound } from "next/navigation";
 import { slugFromPrefecture } from "@/lib/prefecture-slugs";
+import {
+  classifyCareService,
+  CARE_SERVICE_GROUP_GUIDANCE,
+} from "@/lib/care-service-groups";
 
 export const revalidate = 86400;
 
@@ -27,6 +31,84 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
       <dt className="text-sm text-gray-500 font-medium">{label}</dt>
       <dd className="text-sm text-gray-800">{value}</dd>
     </div>
+  );
+}
+
+function FacilityCheckPoints({
+  serviceName,
+  serviceCode,
+}: {
+  serviceName: string;
+  serviceCode: string;
+}) {
+  const groupKey = classifyCareService(serviceName, serviceCode);
+  const guidance = CARE_SERVICE_GROUP_GUIDANCE[groupKey];
+
+  return (
+    <section className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 sm:px-6 sm:py-5 mt-6">
+      <h2 className="font-serif text-base font-bold text-primary mb-3">
+        この施設を確認するときのポイント
+      </h2>
+      <p className="text-sm text-gray-600 leading-relaxed mb-3">
+        掲載している情報は、公開データをもとにした基本情報です。
+        実際に利用を検討する場合は、空き状況・費用・対応できる介護内容・医療対応・認知症対応・送迎範囲などを、
+        公式情報や事業所へ直接確認することが大切です。
+      </p>
+      <p className="text-sm text-gray-600 leading-relaxed mb-3">
+        {guidance.description}
+      </p>
+      <ul className="text-sm text-gray-700 space-y-1.5 list-disc pl-5">
+        {guidance.checkItems.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function FacilityRelatedLinks({
+  pref,
+  city,
+  serviceCode,
+  serviceName,
+}: {
+  pref: string;
+  city: string;
+  serviceCode: string;
+  serviceName: string;
+}) {
+  return (
+    <section className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 sm:px-6 sm:py-5 mt-6">
+      <h2 className="font-serif text-base font-bold text-primary mb-3">
+        同じ地域の{serviceName}を探す
+      </h2>
+      <ul className="space-y-2">
+        <li>
+          <Link
+            href={`/${pref}/${city}/${serviceCode}`}
+            className="text-sm text-primary font-medium hover:underline"
+          >
+            {city}の{serviceName}一覧を見る →
+          </Link>
+        </li>
+        <li>
+          <Link
+            href={`/${pref}/${city}`}
+            className="text-sm text-primary font-medium hover:underline"
+          >
+            {city}の介護施設・介護サービス一覧を見る →
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/guides/care-service-types"
+            className="text-sm text-primary font-medium hover:underline"
+          >
+            介護サービスの種類を確認する →
+          </Link>
+        </li>
+      </ul>
+    </section>
   );
 }
 
@@ -139,6 +221,18 @@ export default async function FacilityDetailPage({
           } />
         </dl>
       </div>
+
+      <FacilityCheckPoints
+        serviceName={facility.service_name}
+        serviceCode={service_code}
+      />
+
+      <FacilityRelatedLinks
+        pref={pref}
+        city={c}
+        serviceCode={service_code}
+        serviceName={facility.service_name}
+      />
     </>
   );
 }
