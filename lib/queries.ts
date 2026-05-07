@@ -65,7 +65,13 @@ export async function getCitiesByPref(prefecture: string): Promise<City[]> {
   return rows as City[];
 }
 
-/** 施設一覧（都道府県・市区町村必須、サービスコード任意、ページネーション対応） */
+/**
+ * 施設一覧（都道府県・市区町村必須、サービスコード任意、ページネーション対応）。
+ *
+ * facilities.city は政令指定都市の場合、行政区単位（例: 「大阪市北区」）で格納されているため、
+ * getServicesByCity と同様に municipality_mapping を経由して city_agg → city_raw[] を解決する。
+ * 通常市区町村（mapping ヒットなし）の場合は city = ${city} のみがヒットし、従来挙動と同じ。
+ */
 export async function getFacilities(
   prefecture: string,
   city: string,
@@ -79,8 +85,17 @@ export async function getFacilities(
         SELECT *
         FROM facilities
         WHERE prefecture = ${prefecture}
-          AND city = ${city}
           AND service_code = ${serviceCode}
+          AND (
+            city = ${city}
+            OR city IN (
+              SELECT city_raw FROM municipality_mapping
+              WHERE source_table = 'facilities'
+                AND prefecture = ${prefecture}
+                AND city_agg = ${city}
+                AND status = 'confirmed'
+            )
+          )
         ORDER BY name
         LIMIT ${limit} OFFSET ${offset}
       `,
@@ -88,8 +103,17 @@ export async function getFacilities(
         SELECT COUNT(*) AS count
         FROM facilities
         WHERE prefecture = ${prefecture}
-          AND city = ${city}
           AND service_code = ${serviceCode}
+          AND (
+            city = ${city}
+            OR city IN (
+              SELECT city_raw FROM municipality_mapping
+              WHERE source_table = 'facilities'
+                AND prefecture = ${prefecture}
+                AND city_agg = ${city}
+                AND status = 'confirmed'
+            )
+          )
       `,
     ]);
     return {
@@ -103,7 +127,16 @@ export async function getFacilities(
       SELECT *
       FROM facilities
       WHERE prefecture = ${prefecture}
-        AND city = ${city}
+        AND (
+          city = ${city}
+          OR city IN (
+            SELECT city_raw FROM municipality_mapping
+            WHERE source_table = 'facilities'
+              AND prefecture = ${prefecture}
+              AND city_agg = ${city}
+              AND status = 'confirmed'
+          )
+        )
       ORDER BY service_code, name
       LIMIT ${limit} OFFSET ${offset}
     `,
@@ -111,7 +144,16 @@ export async function getFacilities(
       SELECT COUNT(*) AS count
       FROM facilities
       WHERE prefecture = ${prefecture}
-        AND city = ${city}
+        AND (
+          city = ${city}
+          OR city IN (
+            SELECT city_raw FROM municipality_mapping
+            WHERE source_table = 'facilities'
+              AND prefecture = ${prefecture}
+              AND city_agg = ${city}
+              AND status = 'confirmed'
+          )
+        )
     `,
   ]);
   return {
@@ -255,7 +297,14 @@ export async function getCertificationRanking(
   ` as RankingEntry[];
 }
 
-/** 指定市区町村のサービス種別一覧（施設数・定員集計付き） */
+/**
+ * 指定市区町村のサービス種別一覧（施設数・定員集計付き）。
+ *
+ * facilities.city は政令指定都市の場合、行政区単位（例: 「大阪市北区」）で格納されている。
+ * 一方、ランキング等から市区町村ページへ来る URL は city_agg（市単位、例: 「大阪市」）。
+ * そのため municipality_mapping を経由して、city_agg に紐づく city_raw[] を含めて集計する。
+ * 通常市区町村（mapping ヒットなし）の場合は city = ${city} だけがヒットし、従来挙動と同じ。
+ */
 export async function getServicesByCity(
   prefecture: string,
   city: string,
@@ -269,7 +318,16 @@ export async function getServicesByCity(
       COUNT(capacity)::int AS capacity_known_count
     FROM facilities
     WHERE prefecture = ${prefecture}
-      AND city = ${city}
+      AND (
+        city = ${city}
+        OR city IN (
+          SELECT city_raw FROM municipality_mapping
+          WHERE source_table = 'facilities'
+            AND prefecture = ${prefecture}
+            AND city_agg = ${city}
+            AND status = 'confirmed'
+        )
+      )
     GROUP BY service_code, service_name
     ORDER BY service_code
   `;

@@ -268,26 +268,30 @@ export default async function CityPage({ params }: { params: Promise<{ prefectur
 
       <CareSearchAdviceCard />
 
-      <h2 className="font-serif text-lg font-bold text-primary mb-3">
-        サービス種別から探す
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {services.map((s) => (
-          <Link
-            key={s.service_code}
-            href={`/${pref}/${c}/${s.service_code}`}
-            className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 hover:border-accent hover:shadow-md transition-all flex justify-between items-center"
-          >
-            <div>
-              <span className="font-medium text-gray-800 block">{s.service_name}</span>
-              <span className="text-xs text-gray-400">コード: {s.service_code}</span>
-            </div>
-            <span className="text-sm text-primary font-medium whitespace-nowrap ml-4">
-              {Number(s.facility_count).toLocaleString()}件
-            </span>
-          </Link>
-        ))}
-      </div>
+      {services.length > 0 && (
+        <>
+          <h2 className="font-serif text-lg font-bold text-primary mb-3">
+            サービス種別から探す
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {services.map((s) => (
+              <Link
+                key={s.service_code}
+                href={`/${pref}/${c}/${s.service_code}`}
+                className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 hover:border-accent hover:shadow-md transition-all flex justify-between items-center"
+              >
+                <div>
+                  <span className="font-medium text-gray-800 block">{s.service_name}</span>
+                  <span className="text-xs text-gray-400">コード: {s.service_code}</span>
+                </div>
+                <span className="text-sm text-primary font-medium whitespace-nowrap ml-4">
+                  {Number(s.facility_count).toLocaleString()}件
+                </span>
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
     </>
   );
 }
