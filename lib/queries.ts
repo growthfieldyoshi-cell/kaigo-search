@@ -14,6 +14,8 @@ export interface ServiceType {
   service_code: string;
   service_name: string;
   facility_count: number;
+  capacity_sum: number | null;
+  capacity_known_count: number;
 }
 
 export interface Facility {
@@ -253,18 +255,29 @@ export async function getCertificationRanking(
   ` as RankingEntry[];
 }
 
-/** 指定市区町村のサービス種別一覧（施設数付き） */
+/** 指定市区町村のサービス種別一覧（施設数・定員集計付き） */
 export async function getServicesByCity(
   prefecture: string,
   city: string,
 ): Promise<ServiceType[]> {
   const rows = await sql`
-    SELECT service_code, service_name, COUNT(*) AS facility_count
+    SELECT
+      service_code,
+      service_name,
+      COUNT(*)::int AS facility_count,
+      SUM(capacity)::int AS capacity_sum,
+      COUNT(capacity)::int AS capacity_known_count
     FROM facilities
     WHERE prefecture = ${prefecture}
       AND city = ${city}
     GROUP BY service_code, service_name
     ORDER BY service_code
   `;
-  return rows as ServiceType[];
+  return rows.map((r) => ({
+    service_code: r.service_code as string,
+    service_name: r.service_name as string,
+    facility_count: Number(r.facility_count),
+    capacity_sum: r.capacity_sum != null ? Number(r.capacity_sum) : null,
+    capacity_known_count: Number(r.capacity_known_count),
+  }));
 }
