@@ -162,6 +162,66 @@ export async function getFacilities(
   };
 }
 
+/** 関連施設リスト用の軽量型（一覧カードに必要なカラムのみ） */
+export interface RelatedFacility {
+  id: number;
+  name: string;
+  service_name: string;
+  prefecture: string;
+  city: string;
+  address: string;
+  tel: string | null;
+  url: string | null;
+  service_code: string;
+}
+
+/**
+ * 同じ都道府県・市区町村・サービス種別の他施設を取得（現在施設は除外）。
+ *
+ * city 解決は getFacilities / getServicesByCity と同じ municipality_mapping パターン。
+ * 政令指定都市（city_agg）の場合は行政区横断で取得、通常市は city = ${city} のみがヒット。
+ *
+ * 並び順は id ASC で固定（キャッシュ・表示安定性のためランダム禁止）。
+ */
+export async function getRelatedFacilitiesByService(
+  prefecture: string,
+  city: string,
+  serviceCode: string,
+  excludeId: number,
+  limit = 5,
+): Promise<RelatedFacility[]> {
+  const rows = await sql`
+    SELECT id, name, service_name, prefecture, city, address, tel, url, service_code
+    FROM facilities
+    WHERE prefecture = ${prefecture}
+      AND service_code = ${serviceCode}
+      AND id <> ${excludeId}
+      AND (
+        city = ${city}
+        OR city IN (
+          SELECT city_raw FROM municipality_mapping
+          WHERE source_table = 'facilities'
+            AND prefecture = ${prefecture}
+            AND city_agg = ${city}
+            AND status = 'confirmed'
+        )
+      )
+    ORDER BY id ASC
+    LIMIT ${limit}
+  `;
+  return rows.map((r) => ({
+    id: Number(r.id),
+    name: r.name as string,
+    service_name: r.service_name as string,
+    prefecture: r.prefecture as string,
+    city: r.city as string,
+    address: r.address as string,
+    tel: (r.tel as string | null) ?? null,
+    url: (r.url as string | null) ?? null,
+    service_code: r.service_code as string,
+  }));
+}
+
 /** 施設詳細（ID指定） */
 export async function getFacilityById(id: number): Promise<Facility | null> {
   const rows = await sql`

@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getFacilityById } from "@/lib/queries";
+import {
+  getFacilityById,
+  getRelatedFacilitiesByService,
+} from "@/lib/queries";
+import type { RelatedFacility } from "@/lib/queries";
 import { notFound } from "next/navigation";
 import { slugFromPrefecture } from "@/lib/prefecture-slugs";
 import {
@@ -66,6 +70,52 @@ function FacilityCheckPoints({
   );
 }
 
+function RelatedFacilitiesSection({
+  pref,
+  city,
+  serviceCode,
+  serviceName,
+  facilities,
+}: {
+  pref: string;
+  city: string;
+  serviceCode: string;
+  serviceName: string;
+  facilities: RelatedFacility[];
+}) {
+  if (facilities.length === 0) return null;
+
+  return (
+    <section className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 sm:px-6 sm:py-5 mt-6">
+      <h2 className="font-serif text-base font-bold text-primary mb-3">
+        同じ地域の{serviceName}
+      </h2>
+      <p className="text-sm text-gray-600 leading-relaxed mb-4">
+        {city}で同じ{serviceName}に分類される施設・事業所を一部掲載しています。
+        利用条件や対応内容は施設ごとに異なるため、詳細ページや公式情報をご確認ください。
+      </p>
+      <ul className="space-y-2">
+        {facilities.map((f) => (
+          <li key={f.id}>
+            <Link
+              href={`/${pref}/${city}/${serviceCode}/${f.id}`}
+              className="block border border-gray-200 rounded-md px-4 py-3 hover:border-accent hover:shadow-sm transition-all"
+            >
+              <div className="text-sm font-medium text-gray-800 mb-0.5">
+                {f.name}
+              </div>
+              <div className="text-xs text-gray-500">{f.address}</div>
+              <div className="text-xs text-gray-400 mt-0.5">
+                {f.service_name}
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function FacilityRelatedLinks({
   pref,
   city,
@@ -123,6 +173,14 @@ export default async function FacilityDetailPage({
 
   const facility = await getFacilityById(Number(id));
   if (!facility) notFound();
+
+  const relatedFacilities = await getRelatedFacilitiesByService(
+    pref,
+    c,
+    service_code,
+    Number(id),
+    5,
+  );
 
   const fullAddress = facility.address + (facility.building ? ` ${facility.building}` : "");
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
@@ -225,6 +283,14 @@ export default async function FacilityDetailPage({
       <FacilityCheckPoints
         serviceName={facility.service_name}
         serviceCode={service_code}
+      />
+
+      <RelatedFacilitiesSection
+        pref={pref}
+        city={c}
+        serviceCode={service_code}
+        serviceName={facility.service_name}
+        facilities={relatedFacilities}
       />
 
       <FacilityRelatedLinks
