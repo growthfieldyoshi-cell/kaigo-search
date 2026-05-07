@@ -357,6 +357,52 @@ export async function getCertificationRanking(
   ` as RankingEntry[];
 }
 
+/** sitemap 用: facilities に存在する市区町村を city_agg に集約して列挙 */
+export async function getAllCityAggsForSitemap(): Promise<
+  Array<{ prefecture: string; city: string }>
+> {
+  const rows = await sql`
+    SELECT DISTINCT
+      f.prefecture AS prefecture,
+      COALESCE(m.city_agg, f.city) AS city
+    FROM facilities f
+    LEFT JOIN municipality_mapping m
+      ON m.source_table = 'facilities'
+     AND m.prefecture = f.prefecture
+     AND m.city_raw = f.city
+     AND m.status = 'confirmed'
+    ORDER BY f.prefecture, city
+  `;
+  return rows.map((r) => ({
+    prefecture: r.prefecture as string,
+    city: r.city as string,
+  }));
+}
+
+/** sitemap 用: facilities に存在する (city_agg, service_code) ペアを列挙（施設0件の組合せは含めない） */
+export async function getAllCityServicesForSitemap(): Promise<
+  Array<{ prefecture: string; city: string; service_code: string }>
+> {
+  const rows = await sql`
+    SELECT DISTINCT
+      f.prefecture AS prefecture,
+      COALESCE(m.city_agg, f.city) AS city,
+      f.service_code AS service_code
+    FROM facilities f
+    LEFT JOIN municipality_mapping m
+      ON m.source_table = 'facilities'
+     AND m.prefecture = f.prefecture
+     AND m.city_raw = f.city
+     AND m.status = 'confirmed'
+    ORDER BY f.prefecture, city, f.service_code
+  `;
+  return rows.map((r) => ({
+    prefecture: r.prefecture as string,
+    city: r.city as string,
+    service_code: r.service_code as string,
+  }));
+}
+
 /**
  * 指定市区町村のサービス種別一覧（施設数・定員集計付き）。
  *

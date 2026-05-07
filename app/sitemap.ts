@@ -1,5 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getAllPrefectureSlugs } from "@/lib/prefecture-slugs";
+import {
+  getAllCityAggsForSitemap,
+  getAllCityServicesForSitemap,
+} from "@/lib/queries";
 
 const BASE = "https://www.kaigosagashi.jp";
 
@@ -11,6 +15,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "weekly",
     priority: 0.8,
   }));
+
+  // 市区町村ページ（facilities + municipality_mapping で city_agg に集約済み）
+  const cityAggs = await getAllCityAggsForSitemap();
+  const cityEntries: MetadataRoute.Sitemap = cityAggs.map(({ prefecture, city }) => ({
+    url: `${BASE}/${encodeURIComponent(prefecture)}/${encodeURIComponent(city)}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  // サービス一覧ページ（city_agg × 実在する service_code のみ）
+  const cityServices = await getAllCityServicesForSitemap();
+  const cityServiceEntries: MetadataRoute.Sitemap = cityServices.map(
+    ({ prefecture, city, service_code }) => ({
+      url: `${BASE}/${encodeURIComponent(prefecture)}/${encodeURIComponent(city)}/${service_code}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    }),
+  );
 
   // 都道府県別カバー率ランキング（スラッグベース、DBアクセス不要）
   const prefRankingEntries: MetadataRoute.Sitemap = getAllPrefectureSlugs().map(({ slug }) => ({
@@ -39,6 +63,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 都道府県
     ...prefEntries,
+
+    // 市区町村
+    ...cityEntries,
+
+    // サービス一覧
+    ...cityServiceEntries,
 
     // ランキング（全国）
     {
