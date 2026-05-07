@@ -7,8 +7,9 @@ import "./globals.css";
 const notoSerifJP = Noto_Serif_JP({
   variable: "--font-noto-serif-jp",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["700"],
   display: "swap",
+  preload: false,
 });
 
 const notoSansJP = Noto_Sans_JP({

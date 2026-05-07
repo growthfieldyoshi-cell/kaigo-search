@@ -27,5 +27,12 @@
     "tsx": "^4.21.0",
     "typescript": "^5",
     "xlsx": "^0.18.5"
-  }
+  },
+  "browserslist": [
+    "chrome >= 91",
+    "firefox >= 90",
+    "safari >= 15",
+    "edge >= 91",
+    "not dead"
+  ]
 }
