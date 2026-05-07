@@ -20,6 +20,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  // 都道府県別介護認定率ランキング（スラッグベース、DBアクセス不要）
+  const prefCertRankingEntries: MetadataRoute.Sitemap = getAllPrefectureSlugs().map(({ slug }) => ({
+    url: `${BASE}/ranking/certification/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+
   return [
     // トップ
     {
@@ -48,6 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // ランキング（都道府県別）
     ...prefRankingEntries,
+    ...prefCertRankingEntries,
 
     // 記事
     {
@@ -739,10 +748,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // データ・指標解説
     {
+      url: `${BASE}/data`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
       url: `${BASE}/data/metrics`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.6,
+    },
+    {
+      url: `${BASE}/guides/care-service-types`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+
+    // 静的ページ（運営情報・問い合わせ・プライバシー）
+    {
+      url: `${BASE}/about`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${BASE}/contact`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${BASE}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
     },
   ];
 }
