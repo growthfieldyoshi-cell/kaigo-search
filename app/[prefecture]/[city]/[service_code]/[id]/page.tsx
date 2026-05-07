@@ -17,7 +17,11 @@ export const revalidate = 86400;
 export async function generateMetadata({ params }: { params: Promise<{ prefecture: string; city: string; id: string }> }): Promise<Metadata> {
   const { city, id } = await params;
   const c = decodeURIComponent(city);
-  const facility = await getFacilityById(Number(id));
+  const numericId = Number(id);
+  if (!Number.isInteger(numericId) || numericId <= 0) {
+    return { title: "事業所が見つかりません" };
+  }
+  const facility = await getFacilityById(numericId);
   if (!facility) return { title: "事業所が見つかりません" };
   const title = `${facility.name} | ${c}の${facility.service_name}`;
   const description = `${c}の${facility.service_name}『${facility.name}』の住所・電話番号・定員などを掲載しています。`;
@@ -211,14 +215,17 @@ export default async function FacilityDetailPage({
   const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
 
-  const facility = await getFacilityById(Number(id));
+  const numericId = Number(id);
+  if (!Number.isInteger(numericId) || numericId <= 0) notFound();
+
+  const facility = await getFacilityById(numericId);
   if (!facility) notFound();
 
   const relatedFacilities = await getRelatedFacilitiesByService(
     pref,
     c,
     service_code,
-    Number(id),
+    numericId,
     5,
   );
 

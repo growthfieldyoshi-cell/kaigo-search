@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getFacilities, getServiceName } from "@/lib/queries";
 import { slugFromPrefecture } from "@/lib/prefecture-slugs";
 
@@ -31,11 +32,19 @@ export default async function ServicePage({
   const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
   const sp = await searchParams;
-  const page = Math.max(1, Number(sp.page) || 1);
+
+  let page = 1;
+  if (sp.page !== undefined) {
+    const parsed = Number(sp.page);
+    if (!Number.isInteger(parsed) || parsed <= 0) notFound();
+    page = parsed;
+  }
   const offset = (page - 1) * PER_PAGE;
 
   const { facilities, totalCount } = await getFacilities(pref, c, service_code, PER_PAGE, offset);
+  if (totalCount === 0) notFound();
   const totalPages = Math.ceil(totalCount / PER_PAGE);
+  if (page > totalPages) notFound();
   const serviceName = facilities[0]?.service_name ?? `サービス${service_code}`;
 
   return (

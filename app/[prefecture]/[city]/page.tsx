@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getServicesByCity } from "@/lib/queries";
 import type { ServiceType } from "@/lib/queries";
 import { getCareMetrics } from "@/lib/care-metrics-presenter";
@@ -244,6 +245,8 @@ export default async function CityPage({ params }: { params: Promise<{ prefectur
     getServicesByCity(pref, c),
     getCareMetrics(pref, c),
   ]);
+
+  if (services.length === 0 && !metrics) notFound();
 
   return (
     <>
