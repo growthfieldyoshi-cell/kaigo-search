@@ -9,21 +9,49 @@ export const revalidate = 86400;
 const BASE = "https://www.kaigosagashi.jp";
 const PER_PAGE = 20;
 
-export async function generateMetadata({ params }: { params: Promise<{ prefecture: string; city: string; service_code: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ prefecture: string; city: string; service_code: string }>;
+  searchParams: Promise<{ page?: string }>;
+}): Promise<Metadata> {
   const { prefecture, city, service_code } = await params;
+  const sp = await searchParams;
+
+  // page パラメータの解釈: 未指定 → 1、整数かつ正なら採用、それ以外は不正扱い（DBを叩かず終了）
+  let pageNum = 1;
+  let pageInvalid = false;
+  if (sp.page !== undefined) {
+    const parsed = Number(sp.page);
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+      pageInvalid = true;
+    } else {
+      pageNum = parsed;
+    }
+  }
+  if (pageInvalid) {
+    // 本体側で notFound() が走る。metadata では DB を叩かない。
+    return { title: "ページが見つかりません" };
+  }
+
   const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
   const serviceName = await getServiceName(service_code);
   const title = `${c}の${serviceName}一覧`;
   const description = `${c}の${serviceName}を提供する介護施設一覧です。`;
-  return {
+  const baseCanonical = `${BASE}/${encodeURIComponent(pref)}/${encodeURIComponent(c)}/${service_code}`;
+
+  const meta: Metadata = {
     title,
     description,
     openGraph: { title, description },
-    alternates: {
-      canonical: `${BASE}/${encodeURIComponent(pref)}/${encodeURIComponent(c)}/${service_code}`,
-    },
+    alternates: { canonical: baseCanonical },
   };
+  if (pageNum > 1) {
+    meta.robots = { index: false, follow: true };
+  }
+  return meta;
 }
 
 export default async function ServicePage({
