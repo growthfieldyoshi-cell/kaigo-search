@@ -28,6 +28,22 @@ export async function generateMetadata({ params }: { params: Promise<{ prefectur
   };
 }
 
+function getSafeExternalUrl(url?: string | null): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return null;
+    }
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   if (!value) return null;
   return (
@@ -35,6 +51,30 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
       <dt className="text-sm text-gray-500 font-medium">{label}</dt>
       <dd className="text-sm text-gray-800">{value}</dd>
     </div>
+  );
+}
+
+function OfficialSiteCTA({ url }: { url: string | null | undefined }) {
+  const safeUrl = getSafeExternalUrl(url);
+  if (!safeUrl) return null;
+  return (
+    <section className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 sm:px-6 sm:py-5 mt-6">
+      <h2 className="font-serif text-base font-bold text-primary mb-2">
+        公式情報を確認する
+      </h2>
+      <p className="text-sm text-gray-600 leading-relaxed mb-4">
+        空き状況・費用・対応内容などの最新情報は、公式サイトや事業所へ直接確認してください。
+      </p>
+      <a
+        href={safeUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="公式サイトを見る（外部サイト）"
+        className="inline-flex items-center gap-1 border border-primary text-primary text-sm font-medium rounded-md px-5 py-2.5 hover:bg-primary/5 transition-colors"
+      >
+        公式サイトを見る ↗
+      </a>
+    </section>
   );
 }
 
@@ -184,6 +224,7 @@ export default async function FacilityDetailPage({
 
   const fullAddress = facility.address + (facility.building ? ` ${facility.building}` : "");
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
+  const safeFacilityUrl = getSafeExternalUrl(facility.url);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -197,7 +238,7 @@ export default async function FacilityDetailPage({
       streetAddress: facility.address,
     },
     ...(facility.tel && { telephone: facility.tel }),
-    ...(facility.url && { url: facility.url }),
+    ...(safeFacilityUrl && { url: safeFacilityUrl }),
     ...(facility.lat && facility.lng && {
       geo: {
         "@type": "GeoCoordinates",
@@ -271,14 +312,16 @@ export default async function FacilityDetailPage({
           <DetailRow label="法人番号" value={facility.corp_number} />
           <DetailRow label="事業所番号" value={facility.jigyosho_number} />
           <DetailRow label="URL" value={
-            facility.url && (
-              <a href={facility.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
-                {facility.url}
+            safeFacilityUrl && (
+              <a href={safeFacilityUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+                {safeFacilityUrl}
               </a>
             )
           } />
         </dl>
       </div>
+
+      <OfficialSiteCTA url={facility.url} />
 
       <FacilityCheckPoints
         serviceName={facility.service_name}
