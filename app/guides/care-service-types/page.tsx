@@ -10,6 +10,9 @@ export const metadata: Metadata = {
     description:
       "介護サービスの種類を4分類で整理。訪問介護・通所介護・短期入所・グループホーム・老健・介護医療院などの違いと選び方を解説します。",
   },
+  alternates: {
+    canonical: "https://www.kaigosagashi.jp/guides/care-service-types",
+  },
 };
 
 function Section({

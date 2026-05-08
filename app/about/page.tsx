@@ -4,6 +4,9 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "運営者情報",
   description: "介護さがしの運営者情報・会社概要です。",
+  alternates: {
+    canonical: "https://www.kaigosagashi.jp/about",
+  },
 };
 
 export default function AboutPage() {

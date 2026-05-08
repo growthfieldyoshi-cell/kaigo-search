@@ -10,6 +10,9 @@ export const metadata: Metadata = {
     description:
       "入所系施設カバー率の意味・計算方法・見方を解説。要介護認定者全体に対する入所系施設の定員割合を示す参考指標です。",
   },
+  alternates: {
+    canonical: "https://www.kaigosagashi.jp/data/metrics",
+  },
 };
 
 function Section({

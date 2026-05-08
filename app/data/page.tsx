@@ -4,6 +4,9 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "データについて",
   description: "介護さがしで利用しているデータの出典・ライセンス情報です。",
+  alternates: {
+    canonical: "https://www.kaigosagashi.jp/data",
+  },
 };
 
 export default function DataPage() {

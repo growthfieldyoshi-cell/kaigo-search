@@ -14,6 +14,9 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `介護さがし | 全国${totalStr}件の介護施設検索`,
       description: `全国${totalStr}件の介護施設を都道府県・市区町村・サービス別に検索できる介護施設検索サイトです。`,
     },
+    alternates: {
+      canonical: "https://www.kaigosagashi.jp/",
+    },
   };
 }
 

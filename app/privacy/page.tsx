@@ -4,6 +4,9 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
   description: "介護さがしのプライバシーポリシーです。",
+  alternates: {
+    canonical: "https://www.kaigosagashi.jp/privacy",
+  },
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {

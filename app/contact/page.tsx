@@ -4,6 +4,9 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "お問い合わせ",
   description: "介護さがしへのお問い合わせページです。",
+  alternates: {
+    canonical: "https://www.kaigosagashi.jp/contact",
+  },
 };
 
 export default function ContactPage() {

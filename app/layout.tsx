@@ -76,11 +76,13 @@ export default function RootLayout({
         </main>
         <footer className="bg-primary text-white/70 text-sm">
           <div className="max-w-6xl mx-auto px-4 py-6">
-            <nav className="flex justify-center gap-6 mb-4">
+            <nav className="flex justify-center gap-x-6 gap-y-2 mb-4 flex-wrap">
               <Link href="/about" className="hover:text-white transition-colors">運営者情報</Link>
               <Link href="/privacy" className="hover:text-white transition-colors">プライバシーポリシー</Link>
               <Link href="/contact" className="hover:text-white transition-colors">お問い合わせ</Link>
               <Link href="/data" className="hover:text-white transition-colors">データについて</Link>
+              <Link href="/data/metrics" className="hover:text-white transition-colors">介護指標の見方</Link>
+              <Link href="/guides/care-service-types" className="hover:text-white transition-colors">介護サービスの種類</Link>
             </nav>
             <p className="text-center">&copy; 2025 介護さがし</p>
           </div>
