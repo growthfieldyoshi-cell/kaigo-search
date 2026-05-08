@@ -7,6 +7,9 @@ import {
 
 const BASE = "https://www.kaigosagashi.jp";
 
+// /sitemap.xml は 26,802 URL 程度の単一 sitemap として運用する。
+// 施設詳細 URL は別 Route Handler `/sitemap-facilities-1.xml` 側で配信し、
+// /sitemap.xml は GSC 既送信の URL として従来挙動を維持する。
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 都道府県ページ（slug ベース）
   const prefEntries: MetadataRoute.Sitemap = getAllPrefectureSlugs().map(({ slug }) => ({

@@ -49,6 +49,12 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://www.kaigosagashi.jp/sitemap.xml",
+    // /sitemap.xml: GSC に既送信済みの単一 sitemap（home / static / prefecture / ranking / articles / city / city-service）
+    // /sitemap-facilities-1.xml: 施設詳細 第1段（公式 URL 持ち施設の上位 25,000 件）
+    // 将来の拡張は /sitemap-facilities-2.xml, /sitemap-facilities-3.xml ... を追加する想定。
+    sitemap: [
+      "https://www.kaigosagashi.jp/sitemap.xml",
+      "https://www.kaigosagashi.jp/sitemap-facilities-1.xml",
+    ],
   };
 }

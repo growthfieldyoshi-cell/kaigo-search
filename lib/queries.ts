@@ -477,6 +477,52 @@ export async function getAllCityServicesForSitemap(): Promise<
   }));
 }
 
+/** sitemap 用: 施設詳細ページの URL 構成データを id ASC で返す。
+ *
+ * 抽出条件: 公式 URL が http(s):// で始まる施設のみ（品質シグナルが強い候補）。
+ * city は confirmed mapping 経由で city_agg に正規化済み（city_raw URL は混入しない）。
+ *
+ * 用途: app/sitemap.ts の generateSitemaps() で id=1 以降の chunk として呼び出す。
+ * offset/limit はページネーション境界。50,000 URL/ファイルの sitemap 上限内で運用する想定。
+ */
+export interface FacilitySitemapEntry {
+  id: number;
+  prefecture: string;
+  city: string;
+  service_code: string;
+}
+
+export async function getFacilitiesForSitemap(
+  offset: number,
+  limit: number,
+): Promise<FacilitySitemapEntry[]> {
+  const rows = await sql`
+    SELECT
+      f.id AS id,
+      f.prefecture AS prefecture,
+      COALESCE(NULLIF(m.city_agg, ''), f.city) AS city,
+      f.service_code AS service_code
+    FROM facilities f
+    LEFT JOIN municipality_mapping m
+      ON m.source_table = 'facilities'
+     AND m.prefecture = f.prefecture
+     AND m.city_raw = f.city
+     AND m.status = 'confirmed'
+    WHERE f.url IS NOT NULL
+      AND TRIM(f.url) <> ''
+      AND f.url ~* '^https?://'
+    ORDER BY f.id ASC
+    LIMIT ${limit}
+    OFFSET ${offset}
+  `;
+  return rows.map((r) => ({
+    id: Number(r.id),
+    prefecture: r.prefecture as string,
+    city: r.city as string,
+    service_code: r.service_code as string,
+  }));
+}
+
 /**
  * 指定市区町村のサービス種別一覧（施設数・定員集計付き）。
  *
