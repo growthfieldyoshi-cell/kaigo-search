@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getServicesByCity } from "@/lib/queries";
+import { notFound, permanentRedirect } from "next/navigation";
+import { getServicesByCity, getMappedCityAgg } from "@/lib/queries";
 import type { ServiceType } from "@/lib/queries";
 import { getCareMetrics } from "@/lib/care-metrics-presenter";
 import type { CareMetricsPresentation } from "@/lib/care-metrics-presenter";
@@ -20,6 +20,10 @@ export async function generateMetadata({ params }: { params: Promise<{ prefectur
   const { prefecture, city } = await params;
   const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
+  const cityAgg = await getMappedCityAgg(pref, c);
+  if (cityAgg) {
+    permanentRedirect(`/${encodeURIComponent(pref)}/${encodeURIComponent(cityAgg)}`);
+  }
   const services = await getServicesByCity(pref, c);
   const title = `${c}の介護施設・${services.length}種類`;
   const description = `${c}で利用できる介護サービスを種類別に探せます。`;
@@ -247,6 +251,12 @@ export default async function CityPage({ params }: { params: Promise<{ prefectur
   const { prefecture, city } = await params;
   const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
+
+  const cityAgg = await getMappedCityAgg(pref, c);
+  if (cityAgg) {
+    permanentRedirect(`/${encodeURIComponent(pref)}/${encodeURIComponent(cityAgg)}`);
+  }
+
   const [services, metrics] = await Promise.all([
     getServicesByCity(pref, c),
     getCareMetrics(pref, c),

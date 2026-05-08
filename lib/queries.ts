@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { sql } from './db';
 
 export interface Prefecture {
@@ -53,17 +54,61 @@ export async function getPrefectures(): Promise<Prefecture[]> {
   return rows as Prefecture[];
 }
 
-/** 指定都道府県の市区町村一覧（施設数付き） */
+/**
+ * 指定都道府県の市区町村一覧（施設数付き）。
+ *
+ * facilities.city は政令指定都市の場合 city_raw（行政区単位、例: 「大阪市住吉区」）で格納されているため、
+ * municipality_mapping を経由して city_agg（市単位、例: 「大阪市」）に集約してから返す。
+ * sitemap の city_agg URL と内部リンクを揃えるため、出力 city は必ず city_agg に正規化済み。
+ * 通常市区町村（mapping ヒットなし）は f.city がそのまま返る。
+ */
 export async function getCitiesByPref(prefecture: string): Promise<City[]> {
   const rows = await sql`
-    SELECT city, COUNT(*) AS facility_count
-    FROM facilities
-    WHERE prefecture = ${prefecture}
-    GROUP BY city
-    ORDER BY city
+    SELECT
+      COALESCE(NULLIF(m.city_agg, ''), f.city) AS city,
+      COUNT(*)::int AS facility_count
+    FROM facilities f
+    LEFT JOIN municipality_mapping m
+      ON m.source_table = 'facilities'
+     AND m.prefecture = f.prefecture
+     AND m.city_raw = f.city
+     AND m.status = 'confirmed'
+    WHERE f.prefecture = ${prefecture}
+    GROUP BY COALESCE(NULLIF(m.city_agg, ''), f.city)
+    ORDER BY COALESCE(NULLIF(m.city_agg, ''), f.city)
   `;
   return rows as City[];
 }
+
+/**
+ * city_raw → city_agg を解決する軽量関数。
+ *
+ * 戻り値:
+ * - municipality_mapping にヒットしない（通常市区町村）→ null
+ * - city_agg が NULL / 空文字 → null
+ * - city_agg === 引数 city（自分自身、無限リダイレクト防止）→ null
+ * - それ以外 → city_agg を返す
+ *
+ * 同一リクエスト内で metadata と page の両方から呼ばれるため React.cache で SQL 1回に抑制。
+ */
+export const getMappedCityAgg = cache(
+  async (prefecture: string, city: string): Promise<string | null> => {
+    const rows = await sql`
+      SELECT city_agg
+      FROM municipality_mapping
+      WHERE source_table = 'facilities'
+        AND prefecture = ${prefecture}
+        AND city_raw = ${city}
+        AND status = 'confirmed'
+      LIMIT 1
+    `;
+    const cityAgg = rows[0]?.city_agg as string | null | undefined;
+    if (!cityAgg) return null;
+    if (cityAgg.trim() === '') return null;
+    if (cityAgg === city) return null;
+    return cityAgg;
+  },
+);
 
 /**
  * 施設一覧（都道府県・市区町村必須、サービスコード任意、ページネーション対応）。

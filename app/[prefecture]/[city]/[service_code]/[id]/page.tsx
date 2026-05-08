@@ -3,9 +3,10 @@ import Link from "next/link";
 import {
   getFacilityById,
   getRelatedFacilitiesByService,
+  getMappedCityAgg,
 } from "@/lib/queries";
 import type { RelatedFacility } from "@/lib/queries";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { slugFromPrefecture } from "@/lib/prefecture-slugs";
 import {
   classifyCareService,
@@ -20,6 +21,12 @@ export async function generateMetadata({ params }: { params: Promise<{ prefectur
   const { prefecture, city, service_code, id } = await params;
   const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
+
+  const cityAgg = await getMappedCityAgg(pref, c);
+  if (cityAgg) {
+    permanentRedirect(`/${encodeURIComponent(pref)}/${encodeURIComponent(cityAgg)}/${service_code}/${id}`);
+  }
+
   const numericId = Number(id);
   if (!Number.isInteger(numericId) || numericId <= 0) {
     return { title: "事業所が見つかりません" };
@@ -220,6 +227,11 @@ export default async function FacilityDetailPage({
   const { prefecture, city, service_code, id } = await params;
   const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
+
+  const cityAgg = await getMappedCityAgg(pref, c);
+  if (cityAgg) {
+    permanentRedirect(`/${encodeURIComponent(pref)}/${encodeURIComponent(cityAgg)}/${service_code}/${id}`);
+  }
 
   const numericId = Number(id);
   if (!Number.isInteger(numericId) || numericId <= 0) notFound();

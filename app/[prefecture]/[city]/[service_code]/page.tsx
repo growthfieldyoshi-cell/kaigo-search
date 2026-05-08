@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getFacilities, getServiceName } from "@/lib/queries";
+import { notFound, permanentRedirect } from "next/navigation";
+import { getFacilities, getServiceName, getMappedCityAgg } from "@/lib/queries";
 import { slugFromPrefecture } from "@/lib/prefecture-slugs";
 
 export const revalidate = 86400;
@@ -19,6 +19,14 @@ export async function generateMetadata({
   const { prefecture, city, service_code } = await params;
   const sp = await searchParams;
 
+  const pref = decodeURIComponent(prefecture);
+  const c = decodeURIComponent(city);
+
+  const cityAgg = await getMappedCityAgg(pref, c);
+  if (cityAgg) {
+    permanentRedirect(`/${encodeURIComponent(pref)}/${encodeURIComponent(cityAgg)}/${service_code}`);
+  }
+
   // page パラメータの解釈: 未指定 → 1、整数かつ正なら採用、それ以外は不正扱い（DBを叩かず終了）
   let pageNum = 1;
   let pageInvalid = false;
@@ -35,8 +43,6 @@ export async function generateMetadata({
     return { title: "ページが見つかりません" };
   }
 
-  const pref = decodeURIComponent(prefecture);
-  const c = decodeURIComponent(city);
   const serviceName = await getServiceName(service_code);
   const title = `${c}の${serviceName}一覧`;
   const description = `${c}の${serviceName}を提供する介護施設一覧です。`;
@@ -64,6 +70,12 @@ export default async function ServicePage({
   const { prefecture, city, service_code } = await params;
   const pref = decodeURIComponent(prefecture);
   const c = decodeURIComponent(city);
+
+  const cityAgg = await getMappedCityAgg(pref, c);
+  if (cityAgg) {
+    permanentRedirect(`/${encodeURIComponent(pref)}/${encodeURIComponent(cityAgg)}/${service_code}`);
+  }
+
   const sp = await searchParams;
 
   let page = 1;
