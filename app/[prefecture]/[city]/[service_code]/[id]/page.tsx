@@ -4,6 +4,7 @@ import {
   getFacilityById,
   getRelatedFacilitiesByService,
   getMappedCityAgg,
+  getCanonicalCityForFacility,
 } from "@/lib/queries";
 import type { RelatedFacility } from "@/lib/queries";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -33,15 +34,22 @@ export async function generateMetadata({ params }: { params: Promise<{ prefectur
   }
   const facility = await getFacilityById(numericId);
   if (!facility) return { title: "事業所が見つかりません" };
-  const title = `${facility.name} | ${c}の${facility.service_name}`;
-  const description = `${c}の${facility.service_name}『${facility.name}』の住所・電話番号・定員などを掲載しています。`;
+
+  // canonical / title / description は URL params ではなく facility 実データ由来で組み立てる。
+  // URL params が施設と不一致でも、ここで返す canonical は常に正規 URL を指す。
+  // 実 HTTP の正規化は本体側 permanentRedirect が担う。
+  const canonicalCity = await getCanonicalCityForFacility(
+    facility.prefecture,
+    facility.city,
+  );
+  const canonicalUrl = `${BASE}/${encodeURIComponent(facility.prefecture)}/${encodeURIComponent(canonicalCity)}/${facility.service_code}/${facility.id}`;
+  const title = `${facility.name} | ${canonicalCity}の${facility.service_name}`;
+  const description = `${canonicalCity}の${facility.service_name}『${facility.name}』の住所・電話番号・定員などを掲載しています。`;
   return {
     title,
     description,
     openGraph: { title, description },
-    alternates: {
-      canonical: `${BASE}/${encodeURIComponent(pref)}/${encodeURIComponent(c)}/${service_code}/${id}`,
-    },
+    alternates: { canonical: canonicalUrl },
   };
 }
 
@@ -238,6 +246,24 @@ export default async function FacilityDetailPage({
 
   const facility = await getFacilityById(numericId);
   if (!facility) notFound();
+
+  // URL 整合性ガード: URL params が施設実データと一致しない場合は正規URLへ permanentRedirect。
+  // 同一 id を異なる prefecture/city/service_code で叩いた場合の自己 canonical 汚染を防ぐ。
+  // （city_raw URL も canonicalCity が city_agg を返すため、ここで一発で正規化される。）
+  const canonicalCity = await getCanonicalCityForFacility(
+    facility.prefecture,
+    facility.city,
+  );
+  if (
+    pref !== facility.prefecture ||
+    c !== canonicalCity ||
+    service_code !== facility.service_code ||
+    id !== String(facility.id)
+  ) {
+    permanentRedirect(
+      `/${encodeURIComponent(facility.prefecture)}/${encodeURIComponent(canonicalCity)}/${facility.service_code}/${facility.id}`,
+    );
+  }
 
   const relatedFacilities = await getRelatedFacilitiesByService(
     pref,

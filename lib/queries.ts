@@ -81,7 +81,7 @@ export async function getCitiesByPref(prefecture: string): Promise<City[]> {
 }
 
 /**
- * city_raw → city_agg を解決する軽量関数。
+ * city_raw → city_agg を解決する軽量関数（redirect 判定専用）。
  *
  * 戻り値:
  * - municipality_mapping にヒットしない（通常市区町村）→ null
@@ -107,6 +107,35 @@ export const getMappedCityAgg = cache(
     if (cityAgg.trim() === '') return null;
     if (cityAgg === city) return null;
     return cityAgg;
+  },
+);
+
+/**
+ * 施設データから canonical city を解決する。
+ *
+ * 用途: 施設詳細ページで facility.prefecture / facility.city（city_raw のことが多い）
+ * から「正規 URL に使うべき city」を作る。
+ *
+ * 戻り値（必ず string を返す）:
+ * - confirmed mapping にヒット かつ city_agg が非空 → city_agg
+ * - それ以外（通常市・mapping 未確定など） → 引数 city をそのまま返す
+ *
+ * getMappedCityAgg と違って null を返さないため、canonical URL 構築に直接使える。
+ */
+export const getCanonicalCityForFacility = cache(
+  async (prefecture: string, city: string): Promise<string> => {
+    const rows = await sql`
+      SELECT city_agg
+      FROM municipality_mapping
+      WHERE source_table = 'facilities'
+        AND prefecture = ${prefecture}
+        AND city_raw = ${city}
+        AND status = 'confirmed'
+      LIMIT 1
+    `;
+    const cityAgg = rows[0]?.city_agg as string | null | undefined;
+    if (cityAgg && cityAgg.trim() !== '') return cityAgg;
+    return city;
   },
 );
 
