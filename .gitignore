@@ -23,6 +23,9 @@ node_modules
 # production
 /build
 
+# 診断スクリプトの実行結果（probe-production-urls.ts などが書き出す）
+outputs/
+
 # misc
 .DS_Store
 *.pem
