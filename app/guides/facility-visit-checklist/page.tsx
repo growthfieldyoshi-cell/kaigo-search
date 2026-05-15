@@ -88,6 +88,38 @@ export default function FacilityVisitChecklistPage() {
           </p>
         </div>
 
+        {/* ── 見学チェック項目マップ ── */}
+        <Section id="map" title="見学チェック項目マップ">
+          <p>
+            このページで取り上げているチェック項目は、以下の9カテゴリに整理しています。気になるカテゴリから順に確認していくと、抜け漏れを防ぎやすくなります。
+          </p>
+          <div className="not-prose grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">
+            {[
+              { id: "prepare", num: "01", title: "見学前の準備", color: "bg-gray-50 border-gray-200" },
+              { id: "location", num: "02", title: "立地・アクセス", color: "bg-blue-50 border-blue-200" },
+              { id: "cleanliness", num: "03", title: "施設内の清潔感", color: "bg-emerald-50 border-emerald-200" },
+              { id: "staff", num: "04", title: "職員の対応", color: "bg-amber-50 border-amber-200" },
+              { id: "residents", num: "05", title: "入居者の雰囲気", color: "bg-purple-50 border-purple-200" },
+              { id: "daily-life", num: "06", title: "食事・入浴・リハビリ", color: "bg-orange-50 border-orange-200" },
+              { id: "medical", num: "07", title: "医療対応・夜間対応", color: "bg-rose-50 border-rose-200" },
+              { id: "cost", num: "08", title: "費用・追加料金", color: "bg-yellow-50 border-yellow-200" },
+              { id: "exit-emergency", num: "09", title: "退去・緊急時対応", color: "bg-slate-50 border-slate-200" },
+            ].map((c) => (
+              <a
+                key={c.id}
+                href={`#${c.id}`}
+                className={`block rounded-lg border ${c.color} px-3 py-2.5 hover:shadow-sm transition-shadow`}
+              >
+                <p className="text-xs text-gray-500 font-mono mb-0.5">{c.num}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-800">{c.title}</p>
+              </a>
+            ))}
+          </div>
+          <p className="text-xs text-gray-500 mt-3">
+            ※ カテゴリ名をクリックすると、各項目の詳細チェックリストに移動できます。
+          </p>
+        </Section>
+
         {/* ── 見学前の準備 ── */}
         <Section id="prepare" title="見学前に準備すること">
           <p>

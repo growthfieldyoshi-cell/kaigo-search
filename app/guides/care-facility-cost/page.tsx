@@ -86,6 +86,107 @@ export default function CareFacilityCostPage() {
           </p>
         </div>
 
+        {/* ── 費用構成の俯瞰図 ── */}
+        <Section id="cost-map" title="介護施設の費用を構成する4つの要素">
+          <p>
+            介護施設で発生する費用は、ざっくり「介護保険自己負担」「食費・居住費」「月額費用（管理費等）」「その他追加費用」の4つに分解できます。施設種別や本人の状況によって金額は大きく変わりますが、構成要素を押さえておくと比較がしやすくなります。
+          </p>
+          <div className="not-prose mt-4 space-y-3">
+            {/* 月額費用の構成棒グラフ風 */}
+            <div className="bg-bg-card border border-gray-200 rounded-lg p-4 sm:p-5">
+              <p className="text-xs text-gray-500 font-medium mb-2">月額費用の主な構成要素</p>
+              <div
+                className="flex h-8 rounded-md overflow-hidden border border-gray-200"
+                role="img"
+                aria-label="月額費用の構成: 介護保険自己負担、居住費、食費、日用品・管理費。比率はイメージ"
+              >
+                <div className="bg-primary/80 flex items-center justify-center text-xs text-white font-medium px-2" style={{ flexBasis: "30%" }}>
+                  介護保険
+                </div>
+                <div className="bg-amber-400 flex items-center justify-center text-xs text-white font-medium px-2" style={{ flexBasis: "30%" }}>
+                  居住費
+                </div>
+                <div className="bg-emerald-500 flex items-center justify-center text-xs text-white font-medium px-2" style={{ flexBasis: "25%" }}>
+                  食費
+                </div>
+                <div className="bg-gray-400 flex items-center justify-center text-xs text-white font-medium px-2" style={{ flexBasis: "15%" }}>
+                  その他
+                </div>
+              </div>
+              <p className="text-xs text-gray-400 mt-2">
+                ※ 上記の比率は構成イメージです。実際の比率は施設・本人の状況により大きく異なります。
+              </p>
+            </div>
+
+            {/* 4要素の説明カード */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="bg-bg-card border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-block w-3 h-3 bg-primary/80 rounded-sm" aria-hidden="true" />
+                  <p className="text-sm font-bold text-gray-800">介護保険自己負担</p>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  介護サービス利用料の1〜3割。要介護度・所得で変動。
+                </p>
+              </div>
+              <div className="bg-bg-card border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-block w-3 h-3 bg-amber-400 rounded-sm" aria-hidden="true" />
+                  <p className="text-sm font-bold text-gray-800">居住費（家賃相当）</p>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  個室・多床室・ユニット型などの部屋タイプで大きく変動。
+                </p>
+              </div>
+              <div className="bg-bg-card border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-block w-3 h-3 bg-emerald-500 rounded-sm" aria-hidden="true" />
+                  <p className="text-sm font-bold text-gray-800">食費</p>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  1日3食分。外泊・欠食時の返金条件は施設ごとに異なる。
+                </p>
+              </div>
+              <div className="bg-bg-card border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-block w-3 h-3 bg-gray-400 rounded-sm" aria-hidden="true" />
+                  <p className="text-sm font-bold text-gray-800">その他追加費用</p>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  日用品費・管理費・医療費・薬代・理美容代・オムツ代など。
+                </p>
+              </div>
+            </div>
+
+            {/* 月額外で別途発生する費用 */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 sm:p-5">
+              <p className="text-sm font-bold text-amber-800 mb-1">月額費用とは別に発生することがある費用</p>
+              <p className="text-xs text-amber-700 leading-relaxed mb-2">
+                施設によっては以下が「月額」に含まれず、別途請求になる場合があります。見積もり時に必ずご確認ください。
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  "入居一時金",
+                  "敷金・保証金",
+                  "オムツ代",
+                  "理美容代",
+                  "外出・通院同行費",
+                  "レク参加費",
+                  "嗜好品費",
+                  "医療費・薬代",
+                ].map((label) => (
+                  <span
+                    key={label}
+                    className="inline-block text-xs text-amber-800 bg-white border border-amber-300 rounded-md px-2 py-1"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Section>
+
         {/* ── 施設種別で費用構造が異なる ── */}
         <Section id="by-type" title="費用は施設種別によって大きく異なる">
           <p>

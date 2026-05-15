@@ -131,6 +131,90 @@ export default function CareServiceTypesPage() {
           </div>
         </Section>
 
+        {/* ── サービス種別分類図 ── */}
+        <Section id="service-map" title="サービス種別マップ">
+          <p>
+            介護保険サービスは利用形態によって、大きく5つの系統に分類できます。それぞれの系統に該当する主なサービスは以下のとおりです。
+          </p>
+          <div className="not-prose mt-3 space-y-3">
+            {[
+              {
+                label: "入所系",
+                accent: "bg-primary/10 text-primary border-primary/30",
+                description: "施設に入所・宿泊して利用",
+                services: [
+                  "特別養護老人ホーム",
+                  "介護老人保健施設（老健）",
+                  "介護医療院",
+                  "認知症対応型共同生活介護（グループホーム）",
+                  "特定施設入居者生活介護（有料老人ホーム等）",
+                  "短期入所生活介護・療養介護（ショートステイ）",
+                ],
+              },
+              {
+                label: "通所系",
+                accent: "bg-amber-50 text-amber-700 border-amber-200",
+                description: "日中に施設へ通って利用",
+                services: [
+                  "通所介護（デイサービス）",
+                  "通所リハビリテーション（デイケア）",
+                  "療養通所介護",
+                ],
+              },
+              {
+                label: "訪問系",
+                accent: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                description: "自宅にスタッフが訪問して利用",
+                services: [
+                  "訪問介護（ホームヘルプ）",
+                  "訪問看護",
+                  "訪問入浴介護",
+                  "訪問リハビリテーション",
+                ],
+              },
+              {
+                label: "相談系",
+                accent: "bg-blue-50 text-blue-700 border-blue-200",
+                description: "ケアプラン作成・利用相談を支援",
+                services: ["居宅介護支援（ケアマネジメント）"],
+              },
+              {
+                label: "福祉用具系",
+                accent: "bg-purple-50 text-purple-700 border-purple-200",
+                description: "用具を借りる・購入する",
+                services: ["福祉用具貸与", "特定福祉用具販売"],
+              },
+            ].map((g) => (
+              <div
+                key={g.label}
+                className="bg-bg-card border border-gray-200 rounded-lg p-4 sm:p-5"
+              >
+                <div className="flex flex-wrap items-baseline gap-2 mb-2">
+                  <span
+                    className={`text-xs font-bold px-2.5 py-1 rounded-full border ${g.accent}`}
+                  >
+                    {g.label}
+                  </span>
+                  <span className="text-xs text-gray-500">{g.description}</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {g.services.map((s) => (
+                    <span
+                      key={s}
+                      className="inline-block text-xs text-gray-700 bg-gray-50 border border-gray-200 rounded-md px-2 py-1"
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-500 mt-3">
+            ※ 上記は介護保険制度上の主要な分類です。実際の利用や組み合わせは、本人の状態や担当ケアマネジャーの判断によって異なります。
+          </p>
+        </Section>
+
         {/* ── 主なサービス種別 ── */}
         <Section id="service-types" title="主なサービス種別の説明">
           <p>

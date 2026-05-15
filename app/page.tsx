@@ -67,43 +67,74 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── 介護施設を探す流れ ── */}
+      {/* ── 介護施設を探す流れ（4ステップ図解） ── */}
       <section className="mb-10">
         <h2 className="font-serif text-xl font-bold text-primary mb-4">
           介護施設を探す流れ
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4">
-            <p className="text-xs text-gray-400 mb-1">STEP 1</p>
-            <p className="font-medium text-gray-800 text-sm mb-1">サービス種別を理解する</p>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              訪問介護・通所介護・特養・老健・グループホームなどの違いを把握します。
-            </p>
-            <Link href="/guides/care-service-types" className="text-xs text-primary hover:underline mt-2 inline-block">
-              サービスの種類を見る →
-            </Link>
-          </div>
-          <div className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4">
-            <p className="text-xs text-gray-400 mb-1">STEP 2</p>
-            <p className="font-medium text-gray-800 text-sm mb-1">地域から施設を探す</p>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              都道府県 → 市区町村 → サービス種別の順で絞り込み、候補をリストアップします。
-            </p>
-            <a href="#prefectures" className="text-xs text-primary hover:underline mt-2 inline-block">
-              都道府県から探す →
-            </a>
-          </div>
-          <div className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4">
-            <p className="text-xs text-gray-400 mb-1">STEP 3</p>
-            <p className="font-medium text-gray-800 text-sm mb-1">見学・専門家へ確認</p>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              気になる施設を見学し、空き状況・費用・対応内容を直接問い合わせます。
-            </p>
-            <Link href="/guides/facility-visit-checklist" className="text-xs text-primary hover:underline mt-2 inline-block">
-              見学チェックリストを見る →
-            </Link>
-          </div>
-        </div>
+        <ol className="relative space-y-3 sm:space-y-4">
+          {/* 縦のコネクトライン（sm以上で表示） */}
+          <div
+            aria-hidden="true"
+            className="hidden sm:block absolute left-[19px] top-3 bottom-3 w-px bg-gray-200"
+          />
+          {[
+            {
+              step: 1,
+              title: "状態を整理する",
+              body: "本人の要介護度・必要な支援・家族の希望（自宅介護か施設か、通える距離、費用上限など）を書き出します。",
+              link: { href: "/guides/how-to-choose-care-facility", label: "整理の進め方を見る" },
+            },
+            {
+              step: 2,
+              title: "サービス種別を知る",
+              body: "訪問介護・通所介護・特養・老健・グループホームなど、種類の違いを大まかに把握します。",
+              link: { href: "/guides/care-service-types", label: "サービスの種類を見る" },
+            },
+            {
+              step: 3,
+              title: "地域で候補を探す",
+              body: "都道府県 → 市区町村 → サービス種別の順で絞り込み、施設候補をリストアップします。",
+              link: { href: "#prefectures", label: "都道府県から探す", isAnchor: true },
+            },
+            {
+              step: 4,
+              title: "施設・専門家に確認する",
+              body: "空き状況・費用・医療対応などは各施設に直接確認し、判断はケアマネジャー等の専門家にも相談します。",
+              link: { href: "/guides/facility-visit-checklist", label: "見学チェックリストを見る" },
+            },
+          ].map((s) => (
+            <li key={s.step} className="relative pl-12 sm:pl-14">
+              {/* ステップ番号バッジ */}
+              <div
+                aria-hidden="true"
+                className="absolute left-0 top-0 w-10 h-10 rounded-full bg-primary text-white font-serif font-bold flex items-center justify-center text-base shadow-sm"
+              >
+                {s.step}
+              </div>
+              <div className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4">
+                <p className="text-xs text-gray-400 mb-1">STEP {s.step}</p>
+                <p className="font-medium text-gray-800 text-sm sm:text-base mb-1">{s.title}</p>
+                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{s.body}</p>
+                {s.link.isAnchor ? (
+                  <a
+                    href={s.link.href}
+                    className="text-xs text-primary hover:underline mt-2 inline-block"
+                  >
+                    {s.link.label} →
+                  </a>
+                ) : (
+                  <Link
+                    href={s.link.href}
+                    className="text-xs text-primary hover:underline mt-2 inline-block"
+                  >
+                    {s.link.label} →
+                  </Link>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
       </section>
 
       {/* ── 初めての方向けガイド ── */}
