@@ -45,6 +45,22 @@ export default function AboutPage() {
         </dl>
       </div>
 
+      {/* ── 運営者より ── */}
+      <div className="bg-bg-card border border-gray-200 rounded-lg p-6 sm:p-8 mt-6">
+        <h2 className="font-serif text-lg font-bold text-primary mb-3">運営者より</h2>
+        <div className="text-sm text-gray-700 leading-relaxed space-y-3">
+          <p>
+            介護施設を探そうとすると、施設名や住所だけを並べた一覧を目にすることが多いと思います。ただ、実際に家族が介護に向き合う段階では、施設名以上にサービス種別の違い・地域ごとの介護環境・どこに相談すればよいかを、あわせて理解する必要があります。
+          </p>
+          <p>
+            介護さがしは、公開されている介護事業所のデータを整理し、都道府県・市区町村・サービス種別ごとに比較しやすくすることを目的に運営しています。地域の介護指標（入所系施設カバー率・介護認定率など）も、家族が地域の介護環境を把握する手がかりとして役立つよう、用語の解説や注意点とあわせて掲載しています。
+          </p>
+          <p>
+            掲載しているのはあくまで公開データに基づく基本情報です。空き状況や費用、医療対応の可否、入居の最終判断などは、必ず施設・自治体・担当ケアマネジャー等にご確認ください。介護さがしは、専門家へ相談する前の情報整理の入口として使っていただければと考えています。
+          </p>
+        </div>
+      </div>
+
       {/* ── サイト運営目的 ── */}
       <div className="bg-bg-card border border-gray-200 rounded-lg p-6 sm:p-8 mt-6">
         <h2 className="font-serif text-lg font-bold text-primary mb-3">サイト運営目的</h2>

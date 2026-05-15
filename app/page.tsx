@@ -47,6 +47,26 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── 介護さがしを作った理由 ── */}
+      <section className="mb-10">
+        <h2 className="font-serif text-xl font-bold text-primary mb-3">
+          介護さがしを作った理由
+        </h2>
+        <div className="bg-bg-card border border-gray-200 rounded-lg p-5 sm:p-6">
+          <div className="text-sm text-gray-700 leading-relaxed space-y-3">
+            <p>
+              家族の介護が必要になったとき、最初にぶつかるのが「施設の種類が多くて違いがわからない」「地域ごとにどんな施設があるのか把握しにくい」という壁です。介護施設の情報は公的なデータベースに公開されているものの、地域・サービス種別を横断して比較しやすい形にはなっていません。
+            </p>
+            <p>
+              介護さがしは、この「最初の比較・確認」が少しでもしやすくなるよう、公開データを整理し、都道府県・市区町村・サービス種別ごとに探せる入口として作っています。地域差や指標の意味も、家族目線で読めるように解説を添えるよう心がけています。
+            </p>
+            <p>
+              ただし、掲載しているのは公開データに基づく基本情報です。空き状況・料金・医療対応・受け入れ条件など、実際の利用判断に直結する情報は、必ず各施設・自治体・担当ケアマネジャー等にもご確認ください。介護さがしは、専門家への相談前に情報を整理するための補助としてご活用いただくことを想定しています。
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── 介護施設を探す流れ ── */}
       <section className="mb-10">
         <h2 className="font-serif text-xl font-bold text-primary mb-4">

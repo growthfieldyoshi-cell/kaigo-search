@@ -12,6 +12,7 @@ import { slugFromPrefecture } from "@/lib/prefecture-slugs";
 import {
   classifyCareService,
   CARE_SERVICE_GROUP_GUIDANCE,
+  CARE_SERVICE_GROUP_INTRO,
 } from "@/lib/care-service-groups";
 
 export const revalidate = 86400;
@@ -383,6 +384,10 @@ export default async function FacilityDetailPage({
   const cleanFax = facility.fax && isMeaningfulStringValue(facility.fax) ? facility.fax : null;
   const cleanNameKana = facility.name_kana && isMeaningfulStringValue(facility.name_kana) ? facility.name_kana : null;
 
+  // サービス種別グループ別の冒頭リード文
+  const serviceGroup = classifyCareService(facility.service_name, service_code);
+  const serviceIntro = CARE_SERVICE_GROUP_INTRO[serviceGroup];
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -440,8 +445,12 @@ export default async function FacilityDetailPage({
           {facility.name}
         </h1>
         {cleanNameKana && (
-          <p className="text-sm text-gray-400 mb-6">{cleanNameKana}</p>
+          <p className="text-sm text-gray-400 mb-3">{cleanNameKana}</p>
         )}
+
+        <p className="text-sm text-gray-700 leading-relaxed mb-6">
+          <strong>{facility.name}</strong>は、{pref}{c}にある{facility.service_name}の事業所です。{serviceIntro}
+        </p>
 
         <dl>
           <DetailRow label="サービス種別" value={facility.service_name} />
