@@ -75,28 +75,59 @@ export default async function HomePage() {
           </div>
           <div className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4">
             <p className="text-xs text-gray-400 mb-1">STEP 3</p>
-            <p className="font-medium text-gray-800 text-sm mb-1">施設・専門家へ確認</p>
+            <p className="font-medium text-gray-800 text-sm mb-1">見学・専門家へ確認</p>
             <p className="text-xs text-gray-600 leading-relaxed">
-              気になる施設の公式情報を確認し、空き状況や費用、対応内容を直接問い合わせます。
+              気になる施設を見学し、空き状況・費用・対応内容を直接問い合わせます。
             </p>
+            <Link href="/guides/facility-visit-checklist" className="text-xs text-primary hover:underline mt-2 inline-block">
+              見学チェックリストを見る →
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ── 介護サービスの種類を知る ── */}
+      {/* ── 初めての方向けガイド ── */}
       <section className="mb-10">
         <h2 className="font-serif text-xl font-bold text-primary mb-3">
-          介護サービスの種類を知る
+          初めて介護施設を探す方へ
         </h2>
-        <p className="text-sm text-gray-700 leading-relaxed mb-3">
-          介護保険で利用できるサービスには、自宅で利用するもの・通って利用するもの・短期間泊まるもの・入所して利用するものがあります。それぞれの違いと選び方を整理しています。
+        <p className="text-sm text-gray-700 leading-relaxed mb-4">
+          家族の介護施設探しを始める前に、押さえておきたい基本をまとめた4つのガイドです。順番に読むことで、施設探しの全体像と判断材料を整理できます。
         </p>
-        <Link
-          href="/guides/care-service-types"
-          className="inline-flex items-center bg-primary text-white text-sm font-medium rounded-md px-5 py-2.5 hover:bg-primary/90 transition-colors"
-        >
-          介護サービスの種類と選び方を見る →
-        </Link>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link
+            href="/guides/how-to-choose-care-facility"
+            className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 hover:border-accent hover:shadow-md transition-all"
+          >
+            <p className="text-xs text-gray-400 mb-1">ガイド 1</p>
+            <span className="font-medium text-gray-800 block mb-1">介護施設の探し方</span>
+            <span className="text-sm text-gray-500">最初に確認すべき流れと相談先</span>
+          </Link>
+          <Link
+            href="/guides/care-service-types"
+            className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 hover:border-accent hover:shadow-md transition-all"
+          >
+            <p className="text-xs text-gray-400 mb-1">ガイド 2</p>
+            <span className="font-medium text-gray-800 block mb-1">介護サービスの種類と選び方</span>
+            <span className="text-sm text-gray-500">訪問・通所・入所など主要サービスの違い</span>
+          </Link>
+          <Link
+            href="/guides/facility-visit-checklist"
+            className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 hover:border-accent hover:shadow-md transition-all"
+          >
+            <p className="text-xs text-gray-400 mb-1">ガイド 3</p>
+            <span className="font-medium text-gray-800 block mb-1">施設見学のチェックリスト</span>
+            <span className="text-sm text-gray-500">家族が見るべき確認ポイント</span>
+          </Link>
+          <Link
+            href="/guides/care-facility-cost"
+            className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 hover:border-accent hover:shadow-md transition-all"
+          >
+            <p className="text-xs text-gray-400 mb-1">ガイド 4</p>
+            <span className="font-medium text-gray-800 block mb-1">介護施設の費用の見方</span>
+            <span className="text-sm text-gray-500">月額費用・入居一時金・自己負担の基本</span>
+          </Link>
+        </div>
       </section>
 
       {/* ── 都道府県から探す ── */}

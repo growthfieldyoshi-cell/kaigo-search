@@ -334,8 +334,36 @@ export default function CareServiceTypesPage() {
         </Section>
       </article>
 
-      {/* ── 関連リンク ── */}
+      {/* ── 介護施設探しの関連ガイド ── */}
       <div className="max-w-3xl bg-bg-card border border-gray-200 rounded-lg px-5 py-4 mt-2">
+        <p className="text-sm font-medium text-gray-800 mb-3">介護施設探しの関連ガイド</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Link
+            href="/guides/how-to-choose-care-facility"
+            className="bg-bg border border-gray-200 rounded-lg px-4 py-3 hover:border-accent hover:shadow-sm transition-all"
+          >
+            <span className="font-medium text-gray-800 text-sm block mb-1">介護施設の探し方</span>
+            <span className="text-xs text-gray-500">最初に確認すべき流れと相談先</span>
+          </Link>
+          <Link
+            href="/guides/facility-visit-checklist"
+            className="bg-bg border border-gray-200 rounded-lg px-4 py-3 hover:border-accent hover:shadow-sm transition-all"
+          >
+            <span className="font-medium text-gray-800 text-sm block mb-1">施設見学のチェックリスト</span>
+            <span className="text-xs text-gray-500">家族が見るべき確認ポイント</span>
+          </Link>
+          <Link
+            href="/guides/care-facility-cost"
+            className="bg-bg border border-gray-200 rounded-lg px-4 py-3 hover:border-accent hover:shadow-sm transition-all"
+          >
+            <span className="font-medium text-gray-800 text-sm block mb-1">介護施設の費用の見方</span>
+            <span className="text-xs text-gray-500">月額費用・入居一時金・自己負担の基本</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* ── 関連リンク ── */}
+      <div className="max-w-3xl bg-bg-card border border-gray-200 rounded-lg px-5 py-4 mt-3">
         <p className="text-sm font-medium text-gray-800 mb-2">関連ページ</p>
         <ul className="text-sm space-y-1.5">
           <li>
