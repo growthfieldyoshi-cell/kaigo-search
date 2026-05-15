@@ -228,6 +228,56 @@ function RelatedFacilitiesSection({
   );
 }
 
+function FacilityComparisonGuides() {
+  const guides = [
+    {
+      href: "/guides/how-to-choose-care-facility",
+      title: "介護施設の探し方",
+      description: "最初に確認すべき流れと相談先",
+    },
+    {
+      href: "/guides/care-service-types",
+      title: "介護サービスの種類と選び方",
+      description: "訪問・通所・入所など主要サービスの違い",
+    },
+    {
+      href: "/guides/facility-visit-checklist",
+      title: "施設見学のチェックリスト",
+      description: "家族が見るべき確認ポイント",
+    },
+    {
+      href: "/guides/care-facility-cost",
+      title: "介護施設の費用の見方",
+      description: "月額費用・入居一時金・自己負担の基本",
+    },
+  ];
+
+  return (
+    <section className="bg-bg-card border border-gray-200 rounded-lg px-5 py-4 sm:px-6 sm:py-5 mt-6">
+      <h2 className="font-serif text-base font-bold text-primary mb-2">
+        介護施設を比較するときに確認したいこと
+      </h2>
+      <p className="text-sm text-gray-700 leading-relaxed mb-4">
+        施設を選ぶときは、サービス種別・費用・見学時の確認項目もあわせて確認しましょう。空き状況や費用、医療対応などは施設や自治体、ケアマネジャー等へ直接確認することが大切です。
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {guides.map((g) => (
+          <Link
+            key={g.href}
+            href={g.href}
+            className="block border border-gray-200 rounded-lg px-4 py-3 hover:border-accent hover:shadow-sm transition-all"
+          >
+            <span className="font-medium text-gray-800 text-sm block mb-1">
+              {g.title}
+            </span>
+            <span className="text-xs text-gray-500">{g.description}</span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function FacilityRelatedLinks({
   pref,
   city,
@@ -434,6 +484,8 @@ export default async function FacilityDetailPage({
         serviceName={facility.service_name}
         serviceCode={service_code}
       />
+
+      <FacilityComparisonGuides />
 
       <RelatedFacilitiesSection
         pref={pref}
