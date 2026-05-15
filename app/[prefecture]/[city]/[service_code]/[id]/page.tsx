@@ -45,12 +45,28 @@ export async function generateMetadata({ params }: { params: Promise<{ prefectur
   const canonicalUrl = `${BASE}/${encodeURIComponent(facility.prefecture)}/${encodeURIComponent(canonicalCity)}/${facility.service_code}/${facility.id}`;
   const title = `${facility.name} | ${canonicalCity}の${facility.service_name}`;
   const description = `${canonicalCity}の${facility.service_name}『${facility.name}』の住所・電話番号・定員などを掲載しています。`;
-  return {
+
+  // 低品質ページの noindex 判定:
+  // 住所・電話・定員いずれも欠損している施設はインデックス対象から外す。
+  // 詳細ページとしての情報価値が乏しく、検索結果に出ても利用者の利益にならないため。
+  const hasMeaningfulAddress =
+    !!facility.address && isMeaningfulStringValue(facility.address);
+  const hasMeaningfulTel =
+    !!facility.tel && isMeaningfulStringValue(facility.tel);
+  const hasMeaningfulCapacity = !!facility.capacity && facility.capacity > 0;
+  const isLowQuality =
+    !hasMeaningfulAddress && !hasMeaningfulTel && !hasMeaningfulCapacity;
+
+  const meta: Metadata = {
     title,
     description,
     openGraph: { title, description },
     alternates: { canonical: canonicalUrl },
   };
+  if (isLowQuality) {
+    meta.robots = { index: false, follow: true };
+  }
+  return meta;
 }
 
 function getSafeExternalUrl(url?: string | null): string | null {
@@ -69,7 +85,38 @@ function getSafeExternalUrl(url?: string | null): string | null {
   }
 }
 
+// 表示価値のないプレースホルダ値を判定するヘルパー
+// 元データに "同上"、"-"、"なし"、"0" などのノイズ値が含まれることがあるため、
+// 文字列値ではここで弾いて表示しない。
+const PLACEHOLDER_TEXT_VALUES = new Set([
+  "同上",
+  "-",
+  "ー",
+  "−",
+  "—",
+  "ない",
+  "なし",
+  "未定",
+  "不明",
+  "null",
+  "undefined",
+  "n/a",
+  "N/A",
+]);
+
+function isMeaningfulStringValue(s: string): boolean {
+  const trimmed = s.trim();
+  if (trimmed === "") return false;
+  if (PLACEHOLDER_TEXT_VALUES.has(trimmed)) return false;
+  if (PLACEHOLDER_TEXT_VALUES.has(trimmed.toLowerCase())) return false;
+  return true;
+}
+
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
+  // 文字列・数値値の場合は、空文字・プレースホルダ値・0などを弾く
+  if (value == null) return null;
+  if (typeof value === "string" && !isMeaningfulStringValue(value)) return null;
+  if (typeof value === "number" && value === 0) return null;
   if (!value) return null;
   return (
     <div className="grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] gap-2 py-3 border-b border-gray-100">
@@ -273,9 +320,18 @@ export default async function FacilityDetailPage({
     5,
   );
 
-  const fullAddress = facility.address + (facility.building ? ` ${facility.building}` : "");
+  // building もプレースホルダ値（"同上" 等）の場合は連結しない
+  const buildingPart =
+    facility.building && isMeaningfulStringValue(facility.building)
+      ? ` ${facility.building}`
+      : "";
+  const fullAddress = facility.address + buildingPart;
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
   const safeFacilityUrl = getSafeExternalUrl(facility.url);
+  // プレースホルダ値（"同上" 等）の電話・FAX は非表示にする
+  const cleanTel = facility.tel && isMeaningfulStringValue(facility.tel) ? facility.tel : null;
+  const cleanFax = facility.fax && isMeaningfulStringValue(facility.fax) ? facility.fax : null;
+  const cleanNameKana = facility.name_kana && isMeaningfulStringValue(facility.name_kana) ? facility.name_kana : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -333,8 +389,8 @@ export default async function FacilityDetailPage({
         <h1 className="font-serif text-2xl font-bold text-primary mb-1">
           {facility.name}
         </h1>
-        {facility.name_kana && (
-          <p className="text-sm text-gray-400 mb-6">{facility.name_kana}</p>
+        {cleanNameKana && (
+          <p className="text-sm text-gray-400 mb-6">{cleanNameKana}</p>
         )}
 
         <dl>
@@ -353,9 +409,9 @@ export default async function FacilityDetailPage({
             </span>
           } />
           <DetailRow label="電話番号" value={
-            facility.tel && <a href={`tel:${facility.tel}`} className="text-primary hover:underline">{facility.tel}</a>
+            cleanTel && <a href={`tel:${cleanTel}`} className="text-primary hover:underline">{cleanTel}</a>
           } />
-          <DetailRow label="FAX番号" value={facility.fax} />
+          <DetailRow label="FAX番号" value={cleanFax} />
           <DetailRow label="利用可能曜日" value={facility.available_days} />
           <DetailRow label="曜日特記事項" value={facility.available_days_note} />
           <DetailRow label="定員" value={facility.capacity ? `${facility.capacity}名` : null} />
